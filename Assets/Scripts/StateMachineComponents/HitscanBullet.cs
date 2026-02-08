@@ -1,7 +1,5 @@
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Pool;
 
 public class HitscanBullet : MonoBehaviour
 {
@@ -30,7 +28,7 @@ public class HitscanBullet : MonoBehaviour
 
         if (Physics.Raycast(spawnPoint.position, direction, out RaycastHit hit, float.MaxValue))
         {
-            TrailRenderer trail = Instantiate(getTrail(bulletTrailType), spawnPoint.position, Quaternion.identity);
+            GameObject trail = ObjectPoolManager.spawnObject(getTrail(bulletTrailType), spawnPoint.position, Quaternion.identity, ObjectPoolManager.PoolType.DefaultBulletTrails);
 
             StartCoroutine(SpawnTrail(trail, hit.point, hit.normal, true, bulletSpeed, impactDecalType));
         }
@@ -39,7 +37,7 @@ public class HitscanBullet : MonoBehaviour
 
         else
         {
-            TrailRenderer trail = Instantiate(getTrail(bulletTrailType), spawnPoint.position, Quaternion.identity);
+            GameObject trail = ObjectPoolManager.spawnObject(getTrail(bulletTrailType), spawnPoint.position, Quaternion.identity, ObjectPoolManager.PoolType.DefaultBulletTrails);
 
             StartCoroutine(SpawnTrail(trail, spawnPoint.position + GetDirection(bulletSpreadVarience, spawnPoint) * 100, Vector3.zero, false, bulletSpeed, impactDecalType));
         }
@@ -60,7 +58,7 @@ public class HitscanBullet : MonoBehaviour
     }
 
 
-    private IEnumerator SpawnTrail(TrailRenderer trail, Vector3 HitPoint, Vector3 HitNormal, bool MadeImpact, float bulletSpeed, DecalType impactDecalType)
+    private IEnumerator SpawnTrail(GameObject trail, Vector3 HitPoint, Vector3 HitNormal, bool MadeImpact, float bulletSpeed, DecalType impactDecalType)
     {
         // This has been updated from the video implementation to fix a commonly raised issue about the bullet trails
         // moving slowly when hitting something close, and not
@@ -84,16 +82,16 @@ public class HitscanBullet : MonoBehaviour
             decalCreator.spawnDecalPool(impactDecalType, HitPoint, HitNormal);
         }
 
-        Destroy(trail.gameObject, trail.time);
+        ObjectPoolManager.returnObjectToPool(trail.gameObject, trail.GetComponent<TrailRenderer>().time);
     }
 
-    private TrailRenderer getTrail(TrailType type)
+    private GameObject getTrail(TrailType type)
     {
         foreach (var e in trailsLibrary.entries)
         {
-            if (e.type == type && e.GetTrailRenderer() != null)
+            if (e.type == type && e.prefab != null)
             {
-                return e.GetTrailRenderer();
+                return e.prefab;
             }
         }
         return null;

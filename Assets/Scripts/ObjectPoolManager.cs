@@ -1,9 +1,11 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
 public class ObjectPoolManager : MonoBehaviour
 {
+    private static ObjectPoolManager instance;
     public static List<PooledObjectInfo> ObjectPools = new List<PooledObjectInfo>();
     private GameObject objectPools;
 
@@ -21,6 +23,7 @@ public class ObjectPoolManager : MonoBehaviour
 
     void Awake()
     {
+        instance = this;
         SetupEmpties();
         CleanupNullReferences();
     }
@@ -44,6 +47,9 @@ public class ObjectPoolManager : MonoBehaviour
 
         bulletHoleDecals = new GameObject("Bullet Hole Decals");
         bulletHoleDecals.transform.SetParent(objectPools.transform);
+
+        defaultBulletTrailDecals = new GameObject("Default bullets");
+        defaultBulletTrailDecals.transform.SetParent(objectPools.transform);
     }
 
     /// <summary>
@@ -109,7 +115,7 @@ public class ObjectPoolManager : MonoBehaviour
 
         return spawnableObj;
     }
-    
+
     /// <summary>
     /// Returns the GameObject argument back to the pool. 
     /// 
@@ -122,8 +128,23 @@ public class ObjectPoolManager : MonoBehaviour
     /// ex. myAwesomePool.ActiveObjects[0])
     /// </summary>
     /// <param name="obj">The object that needs to be returned back to its pool</param>
-    public static void returnObjectToPool(GameObject obj)
+    public static void returnObjectToPool(GameObject obj, float delaySeconds = 0f)
     {
+        #region return after delay
+        if (delaySeconds > 0f)
+        {
+            if (instance == null)
+            {
+                Debug.LogWarning("ObjectPoolManager instance missing; returning immediately.");
+            }
+            else
+            {
+                instance.StartCoroutine(ReturnAfterDelay(obj, delaySeconds));
+                return;
+            }
+        }
+        #endregion
+
         if (obj == null)
         {
             Debug.LogWarning("Trying to return a null/destroyed object to the pool");
@@ -146,6 +167,12 @@ public class ObjectPoolManager : MonoBehaviour
             pool.InactiveObjects.Add(obj);
             pool.ActiveObjects.Remove(obj);
         }
+    }
+
+    private static IEnumerator ReturnAfterDelay(GameObject obj, float delaySeconds)
+    {
+        yield return new WaitForSeconds(delaySeconds);
+        returnObjectToPool(obj, 0f);
     }
     
     /// <summary>
