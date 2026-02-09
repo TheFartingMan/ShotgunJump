@@ -8,4 +8,5 @@ public class ShotgunStats : ScriptableObject
     public float bulletSpreadX;
     public float amountOfBullets;
     public int maxAmountOfBulletDecals;
+    public int magSize;
 }

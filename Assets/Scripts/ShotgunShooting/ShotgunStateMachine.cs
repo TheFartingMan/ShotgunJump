@@ -12,8 +12,11 @@ public class ShotgunStateMachine : MonoBehaviour
     public DecalLibrary decalLibrary;
     public Transform ShotgunTip;
     public Transform shoulderTransform;
-    public PlayerMotor playerMotor;
     public Animator anim;
+
+    [Header("Connected scripts from player")]
+    public PlayerMotor playerMotor;
+    public PlayerGroundCheck playerGroundCheck;
 
     #region Connected Scripts
     public PlayerInput Input { get; private set; }
@@ -22,20 +25,28 @@ public class ShotgunStateMachine : MonoBehaviour
     public HitscanBullet hitscanBullet { get; private set; }
     public DecalCreator decalCreator { get; private set; }
     public ObjectPoolManager objectPoolManager { get; private set; }
+    public AmmoManager ammoManager { get; private set; }
     #endregion
     //declare states attatched
     void Awake()
     {
         Input = GetComponent<PlayerInput>();
         Input.initialize(Stats);
+
         Emitter = GetComponent<ParticleEmitter>();
         Emitter.initialize(ParticleLibrary);
+
         Rotate = GetComponent<PlayerRotate>();
+
         decalCreator = GetComponent<DecalCreator>();
         decalCreator.initialize(decalLibrary);
+
         hitscanBullet = GetComponent<HitscanBullet>();
         hitscanBullet.initialize(trailsLibrary, Emitter, decalLibrary, decalCreator);
+
         objectPoolManager = GetComponent<ObjectPoolManager>();
+
+        ammoManager = GetComponent<AmmoManager>();
         
     }
 

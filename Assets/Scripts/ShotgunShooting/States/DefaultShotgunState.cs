@@ -4,13 +4,19 @@ public class DefaultShotgunState : ShotgunState
 {
     public DefaultShotgunState(ShotgunStateMachine machine) : base(machine) { }
 
+    public override void Enter()
+    {
+        machine.ammoManager.setMaxAmmo(machine.shotgunStats[0].magSize);
+    }
+
     public override void Update()
     {
-        if (machine.Input.mousePressed)
+
+        if (machine.Input.mousePressed && machine.ammoManager.ammoCount > 0)
         {
             //machine.Emitter.emitPS(ParticleType.MuzzleFlash, machine.ShotgunTip.position, machine.ShotgunTip.rotation);
-            
-            
+
+
             for (int i = 0; i < machine.shotgunStats[0].amountOfBullets; i++)
             {
                 machine.hitscanBullet.shootBullet(
@@ -23,6 +29,13 @@ public class DefaultShotgunState : ShotgunState
             }
             machine.anim.Play("Shotgun Shoot", 0, 0);
             machine.playerMotor.shotgunJump(-machine.shoulderTransform.forward.normalized * machine.shotgunStats[0].shotgunPushForce);
+
+            machine.ammoManager.subtractAmmo();
+        }
+        
+        if (machine.playerGroundCheck.isGrounded == true)
+        {
+            machine.ammoManager.ammoCount = machine.shotgunStats[0].magSize;
         }
     }
 
