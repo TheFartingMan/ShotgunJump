@@ -17,5 +17,5 @@ MonoBehaviour:
   bulletSpreadY: 0.2
   bulletSpreadX: 0.2
   amountOfBullets: 15
-  maxAmountOfBulletDecals: 100
+  maxAmountOfBulletDecals: 1000
   magSize: 2
