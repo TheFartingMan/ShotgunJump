@@ -35,7 +35,7 @@ public class DefaultShotgunState : ShotgunState
         
         if (machine.playerGroundCheck.isGrounded == true)
         {
-            machine.ammoManager.ammoCount = machine.shotgunStats[0].magSize;
+            machine.ammoManager.addAmmo(machine.shotgunStats[0].magSize);
         }
     }
 
