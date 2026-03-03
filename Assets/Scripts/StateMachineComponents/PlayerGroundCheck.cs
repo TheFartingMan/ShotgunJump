@@ -15,6 +15,7 @@ public class PlayerGroundCheck : MonoBehaviour
                 {
                     isGrounded = true;
                 }
+                else isGrounded = false;
             }
     }
 
