@@ -2,10 +2,13 @@ using UnityEngine;
 
 public class DefaultShotgunState : ShotgunState
 {
+    private const string reloadTimerId = "default_shotgun_reload";
+
     public DefaultShotgunState(ShotgunStateMachine machine) : base(machine) { }
 
     public override void Enter()
     {
+        machine.shotgunPrefabs[0].SetActive(true);
         machine.ammoManager.setMaxAmmo(machine.shotgunStats[0].magSize);
     }
 
@@ -20,7 +23,7 @@ public class DefaultShotgunState : ShotgunState
             for (int i = 0; i < machine.shotgunStats[0].amountOfBullets; i++)
             {
                 machine.hitscanBullet.shootBullet(
-                    machine.ShotgunTip,
+                    machine.shotgunPrefabs[0].transform.GetChild(0),
                     TrailType.DefaultBullet,
                     DecalType.BulletHole,
                     machine.shotgunStats[0].bulletSpeed,
@@ -32,11 +35,29 @@ public class DefaultShotgunState : ShotgunState
 
             machine.ammoManager.subtractAmmo();
         }
-        
-        if (machine.playerGroundCheck.isGrounded == true)
+
+        if (machine.playerGroundCheck.isGrounded)
         {
-            machine.ammoManager.addAmmo(machine.shotgunStats[0].magSize);
+            if (machine.ammoManager.ammoCount < machine.ammoManager.maxAmmo)
+            {
+                machine.timerManager.startTimerIfNotRunning(reloadTimerId, 0.1f, refillAmmo);
+            }
         }
+        else
+        {
+            machine.timerManager.cancelTimer(reloadTimerId);
+        }
+    }
+
+    private void refillAmmo()
+    {
+        machine.ammoManager.addAmmo(machine.shotgunStats[0].magSize);
+    }
+
+    public override void Exit()
+    {
+        machine.timerManager.cancelTimer(reloadTimerId);
+        machine.shotgunPrefabs[0].SetActive(false);
     }
 
 }

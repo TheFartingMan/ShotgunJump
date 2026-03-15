@@ -6,17 +6,15 @@ public class PlayerGroundCheck : MonoBehaviour
 
     void OnCollisionStay(Collision collision)
     {
-        ContactPoint contact = collision.contacts[0];
-        int groundContacts = collision.contactCount;
-
-            foreach (ContactPoint c in collision.contacts)
+        isGrounded = false;
+        foreach (ContactPoint c in collision.contacts)
+        {
+            if (collisionAngle(c) < 30)
             {
-                if (collisionAngle(c) < 30)
-                {
-                    isGrounded = true;
-                }
-                else isGrounded = false;
+                isGrounded = true;
+                break;
             }
+        }
     }
 
     void OnCollisionExit(Collision collision)
