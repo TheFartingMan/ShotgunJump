@@ -19,7 +19,6 @@ public class DefaultShotgunState : ShotgunState
         {
             //machine.Emitter.emitPS(ParticleType.MuzzleFlash, machine.ShotgunTip.position, machine.ShotgunTip.rotation);
 
-
             for (int i = 0; i < machine.shotgunStats[0].amountOfBullets; i++)
             {
                 machine.hitscanBullet.shootBullet(
@@ -30,6 +29,7 @@ public class DefaultShotgunState : ShotgunState
                     new Vector3(machine.shotgunStats[0].bulletSpreadX, machine.shotgunStats[0].bulletSpreadY, 0)
                     );
             }
+            
             machine.anim.Play("Shotgun Shoot", 0, 0);
             machine.playerMotor.shotgunJump(-machine.shoulderTransform.forward.normalized * machine.shotgunStats[0].shotgunPushForce);
 

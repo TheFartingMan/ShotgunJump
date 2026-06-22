@@ -6,6 +6,8 @@ public class OneWayTeleporter : MonoBehaviour
     [SerializeField] private string nameOfLayerObjectToTeleportIsIn;
     [SerializeField] private GameObject end;
 
+    public static int levelNumber;
+
 
     void OnCollisionEnter(Collision collision)
     {
@@ -14,6 +16,7 @@ public class OneWayTeleporter : MonoBehaviour
             objectToTeleport.transform.position = end.transform.position;
             objectToTeleport.transform.rotation = end.transform.rotation;
 
+            levelNumber++;
         }
     }
 }

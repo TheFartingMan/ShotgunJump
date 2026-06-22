@@ -22,6 +22,7 @@ public class HitscanBullet : MonoBehaviour
         this.decalLibrary = decalLibrary;
         this.decalCreator = decalCreator;
     }
+
     public void shootBullet(Transform spawnPoint, TrailType bulletTrailType, DecalType impactDecalType, float bulletSpeed, Vector3 bulletSpreadVarience)
     {
         Vector3 direction = GetDirection(bulletSpreadVarience, spawnPoint);
@@ -30,7 +31,10 @@ public class HitscanBullet : MonoBehaviour
         {
             GameObject trail = ObjectPoolManager.spawnObject(getTrail(bulletTrailType), spawnPoint.position, Quaternion.identity, ObjectPoolManager.PoolType.DefaultBulletTrails);
 
-            StartCoroutine(SpawnTrail(trail, hit.point, hit.normal, true, bulletSpeed, impactDecalType));
+            //Check to see if we hit something that can take damage, if we do return it and plug it in the the coroutine
+            hit.collider.TryGetComponent(out IDamageable target);
+
+            StartCoroutine(SpawnTrail(trail, hit.point, hit.normal, true, bulletSpeed, impactDecalType, target));
         }
 
         // this has been updated to fix a commonly reported problem that you cannot fire if you would not hit anything
@@ -39,7 +43,7 @@ public class HitscanBullet : MonoBehaviour
         {
             GameObject trail = ObjectPoolManager.spawnObject(getTrail(bulletTrailType), spawnPoint.position, Quaternion.identity, ObjectPoolManager.PoolType.DefaultBulletTrails);
 
-            StartCoroutine(SpawnTrail(trail, spawnPoint.position + GetDirection(bulletSpreadVarience, spawnPoint) * 100, Vector3.zero, false, bulletSpeed, impactDecalType));
+            StartCoroutine(SpawnTrail(trail, spawnPoint.position + GetDirection(bulletSpreadVarience, spawnPoint) * 100, Vector3.zero, false, bulletSpeed, impactDecalType, null));
         }
     }
 
@@ -58,13 +62,14 @@ public class HitscanBullet : MonoBehaviour
     }
 
 
-    private IEnumerator SpawnTrail(GameObject trail, Vector3 HitPoint, Vector3 HitNormal, bool MadeImpact, float bulletSpeed, DecalType impactDecalType)
+    private IEnumerator SpawnTrail(GameObject trail, Vector3 HitPoint, Vector3 HitNormal, bool MadeImpact, float bulletSpeed, DecalType impactDecalType, IDamageable target)
     {
         // This has been updated from the video implementation to fix a commonly raised issue about the bullet trails
         // moving slowly when hitting something close, and not
         Vector3 startPosition = trail.transform.position;
         float distance = Vector3.Distance(trail.transform.position, HitPoint);
         float remainingDistance = distance;
+
 
         while (remainingDistance > 0)
         {
@@ -80,6 +85,11 @@ public class HitscanBullet : MonoBehaviour
         if (MadeImpact)
         {
             decalCreator.spawnDecalPool(impactDecalType, HitPoint, HitNormal);
+
+            if (target != null)
+            {
+                target.takeDamage(1);
+            }
         }
 
         ObjectPoolManager.returnObjectToPool(trail.gameObject, trail.GetComponent<TrailRenderer>().time);
