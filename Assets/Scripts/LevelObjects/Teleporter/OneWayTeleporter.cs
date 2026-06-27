@@ -8,6 +8,11 @@ public class OneWayTeleporter : MonoBehaviour
 
     public static int levelNumber;
 
+    void Start()
+    {
+        levelNumber = 0;
+    }
+
 
     void OnCollisionEnter(Collision collision)
     {

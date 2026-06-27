@@ -6,7 +6,7 @@ public class TargetManager : MonoBehaviour
     private int hitTargets;
     [Tooltip("Level number starts with 0, so the tutorial is level 0, the next level is level 1, etc.")]
     [SerializeField] private int level;
-
+    [SerializeField] private GameObject wall;
     private void OnEnable()
     {
         Target.targetHit += OnTargetHit;
@@ -20,6 +20,7 @@ public class TargetManager : MonoBehaviour
     private void OnTargetHit(Target target)
     {
         hitTargets++;
+        Debug.Log("Target hit! Level number: " + OneWayTeleporter.levelNumber);
 
         if (hitTargets >= totalTargets && level == OneWayTeleporter.levelNumber)
         {
@@ -30,5 +31,7 @@ public class TargetManager : MonoBehaviour
     private void AllTargetsHit()
     {
         Debug.Log("All targets hit");
+
+        wall.SetActive(false);
     }
 }
