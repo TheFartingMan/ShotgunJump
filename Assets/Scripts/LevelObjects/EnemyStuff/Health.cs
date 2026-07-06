@@ -1,5 +1,6 @@
 using UnityEngine;
-
+//  Old health script that I was going to use for a potential enemy. Currently unused but could maybe be used for a boss
+//or something like that.
 public class Health : MonoBehaviour
 {
     [SerializeField] private int currentHealth;

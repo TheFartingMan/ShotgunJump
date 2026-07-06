@@ -6,6 +6,7 @@ public class TargetManager : MonoBehaviour
     private int hitTargets;
     [Tooltip("Level number starts with 0, so the tutorial is level 0, the next level is level 1, etc.")]
     [SerializeField] private int level;
+    [Tooltip("The GameObject that is going to be set inactive once all targets are hit")]
     [SerializeField] private GameObject wall;
     private void OnEnable()
     {
@@ -17,14 +18,18 @@ public class TargetManager : MonoBehaviour
         Target.targetHit -= OnTargetHit;
     }
 
+    //  I am passing in the Target script in case I need to get/set some info from the target that just got hit.
+    //As of now it is unessesary
     private void OnTargetHit(Target target)
     {
-        hitTargets++;
-        Debug.Log("Target hit! Level number: " + OneWayTeleporter.levelNumber);
-
-        if (hitTargets >= totalTargets && level == OneWayTeleporter.levelNumber)
+        if (level == OneWayTeleporter.levelNumber)
         {
-            AllTargetsHit();
+            hitTargets++;
+
+            if (hitTargets >= totalTargets)
+            {
+                AllTargetsHit();
+            }
         }
     }
 
